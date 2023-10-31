@@ -116,6 +116,14 @@ Routing rules in the app gateway will be used to route requests from the listene
 
 ![Diagram showing app gateway Rules.](images/agw-rules.png)
 
+Registry route rule:
+
+![Diagram showing app gateway registry route rule.](images/agw-rule-registry.png)
+
+Data route rule:
+![Diagram showing app gateway data route rule.](images/agw-rule-data.png)
+
+
 #### App Gateway Rewrites
 Since ACR returns its own endpoints in various REST APIs, the application gateway’s rewrite headers capability will be used to overwrite the ACR endpoints with App gateway endpoints.
 
