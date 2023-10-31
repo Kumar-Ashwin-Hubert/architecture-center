@@ -7,7 +7,7 @@ This architecture builds on Microsoft's recommended security best practices to e
 
 ## Architecture
 
-[ ![Architecture diagram showing public facing acr deployment.](./images/aks-multi-cluster.svg)](./images/aks-multi-cluster.svg#lightbox)
+![Architecture diagram showing public facing acr deployment.](./images/public-facing-acr-architecture.svg)
 
 ## Components
 
@@ -57,22 +57,28 @@ A public IP is needed for the app gateway that will act as front end for the inc
 #### App Gateway Backend pools
 Application gateway needs to be configured to have two backend pools – Registry and Data.
 The backend targets for these pools will point to the FQDN of the private links of ACR, such as *contososecurepublicacr.privatelink.azurecr.io* for the registry endpoint and *contososecurepublicacr.eastus.data.privatelink.azurecr.io* for the data endpoint.
+
 ![Diagram showing app gateway backend pools.](images/agw-backendpools.png)
 
 Registry backend pool:
+
 ![Diagram showing app gateway registry backend pool.](images/agw-backendpool-registry.png)
 
 Data backend pool:
+
 ![Diagram showing app gateway data backend pool.](images/agw-backendpool-data.png)
 
 #### App Gateway Backend settings
 Similarly, the backend settings need to be configured for both backend pools, ensuring that the backend protocol is set to HTTPS to achieve end-to-end TLS. Ensure you override the hostname with the hostname of the ACR so that the ACR certificate CN (Common Name) will match with the request. Also, custom health probes will be used which are covered in the next section.
+
 ![Diagram showing app gateway backend settings.](images/agw-backendsettings.png)
 
 Registry backend setting:
+
 ![Diagram showing app gateway registry backend setting.](images/agw-backendsetting-registry.png)
 
 Data backend setting:
+
 ![Diagram showing app gateway data backend setting.](images/agw-backendsetting-data.png)
 
 #### App Gateway Health probes
@@ -81,19 +87,24 @@ Custom health probes will be used to determine the health of backend pools. Plea
 ![Diagram showing app gateway health probes.](images/agw-healthprobes.png)
 
 Registry backend health probe:
+
 ![Diagram showing app gateway registry backend health probe.](images/agw-healthprobe-registry.png)
 
 Data backend health probe:
+
 ![Diagram showing app gateway data backend health probe.](images/agw-healthprobe-data.png)
 
 #### App Gateway Listeners
 For the listeners in the app gateway, two HTTPS listeners need to be configured – Registry and Data. The listeners will be associated with custom hostnames such as *acr-secure.contoso.com* for the registry and *acr-secure-data.contoso.com* for the data endpoint (Use listener type Multi site to configure this). SSL certificates will need to be added while configuring these listeners, as they are HTTPS requests.
+
 ![Diagram showing app gateway listeners.](images/agw-listeners.png)
 
 Registry listener:
+
 ![Diagram showing app gateway registry listener.](images/agw-listener-registry.png)
 
 Data listener:
+
 ![Diagram showing app gateway data listener.](images/agw-listener-data.png)
 
 
@@ -138,6 +149,7 @@ The rewrite rules to be configured for the “registry routing rule” are as fo
         h.	Enter a regular expression pattern. In this, we'll use the pattern `https:\/\/contososecurepublicacr.azurecr.io(.*)$`
 
         i.	Select **OK**
+        
         ![Diagram showing app gateway rewrite Location Header condition.](images/agw-rewrite-location-condition.png)
 
     - Add an action to rewrite the location header:
@@ -178,6 +190,7 @@ The rewrite rules to be configured for the “registry routing rule” are as fo
         h.	Enter a regular expression pattern. In this, we'll use the pattern `^(.*)https:\/\/contososecurepublicacr.azurecr.io\/oauth2\/token(.*)$`
         
         i.	Select **OK**
+        
         ![Diagram showing app gateway rewrite WWW-Authenticate Header condition.](images/agw-rewrite-wwwauthenticate-condition.png)
 
     - Add an action to rewrite the location header:
@@ -193,6 +206,7 @@ The rewrite rules to be configured for the “registry routing rule” are as fo
         e.	Enter the header value. In this, we'll use `{http_resp_WWW-Authenticate_1}https://acr-secure.contoso.com/oauth2/token{http_resp_WWW-Authenticate_2}` as the header value. This will replace *contososecurepublicacr.azurecr.io* with *acr-secure.contoso.com* in the WWW-Authenticate header.
         
         f.	Select **OK**.
+        
         ![Diagram showing app gateway rewrite WWW-Authenticate Header condition.](images/agw-rewrite-wwwauthenticate-action.png)
 
 3. **Rewrite Data Location Header**
@@ -218,6 +232,7 @@ The rewrite rules to be configured for the “registry routing rule” are as fo
         h.	Enter a regular expression pattern. In this, we'll use the pattern `https:\/\/contososecurepublicacr.eastus.data.azurecr.io(.*)$`
         
         i.	Select **OK**
+        
         ![Diagram showing app gateway rewrite Data Location Header condition.](images/agw-rewrite-datalocation-action.png)
 
     - Add an action to rewrite the location header:
@@ -235,6 +250,7 @@ The rewrite rules to be configured for the “registry routing rule” are as fo
         as the header value. This will replace contososecurepublicacr.eastus.data.azurecr.io with acr-secure-data.contoso.com in the location header.
         
         f.	Select **OK**.
+        
         ![Diagram showing app gateway rewrite Data Location Header condition.](images/agw-rewrite-datalocation-condition.png)
 
 ### Azure Web Application Firewall (WAF)
@@ -242,12 +258,15 @@ The rewrite rules to be configured for the “registry routing rule” are as fo
 Azure Web Application Firewall (WAF) on Azure Application Gateway provides the ability to Geo-filter traffic, allowing or blocking certain countries/regions from accessing applications. This feature can be used to restrict access to the embargoed countries or IPs that are determined by the customer teams.
 
 To configure WAF v2, create or attach the WAF from the Web Application Firewall section of app gateway.
+
 ![Diagram showing web application firewall of application gateway.](images/agw-waf.png)
 
 In the Application Gateway WAF policy, custom rules can be implemented to block users based on their geo-location or IP address.
+
 ![Diagram showing web application firewall embargo countries custom rules.](images/waf-embargo-countries.png)
 
 Ensure post testing, WAF is set to Prevention mode to block access matching the rules.
+
 ![Diagram showing web application firewall switch to prevention mode.](images/waf-switch-mode.png)
 
 ## Contributors
