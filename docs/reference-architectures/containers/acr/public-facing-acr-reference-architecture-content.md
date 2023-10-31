@@ -7,7 +7,7 @@ This architecture builds on Microsoft's recommended security best practices to e
 
 ## Architecture
 
-![Architecture diagram showing public facing acr deployment.](./images/public-facing-acr-architecture.svg)
+![Architecture diagram showing public facing acr deployment.](images/public-facing-acr-architecture.svg)
 
 ## Components
 
@@ -33,10 +33,12 @@ The Azure Container Registry (ACR) will be deployed and set to private access so
 
 #### Public access
 To make the ACR secure and enable network access only via the App Gateway, the public access should be disabled on the ACR. The Public network access setting under Networking should be set to “Selected network” in case there is a need to access the ACR directly via specific VNets or “Disabled” if you do not want any public network access.
+
 ![Diagram showing acr public access disabled.](images/acr-public-access-disabled.png)
 
 #### Private access
 Ensure a private endpoint connection is created for the ACR and registered in a Private DNS zone so that it can be used by app gateway for connecting securely to the ACR.
+
 ![Diagram showing acr private endpoint.](images/acr-private-endpoint-connected.png)
 ![Diagram showing acr private endpoint DNS configuration.](images/acr-private-endpoint-dns-configuration.png)
 
@@ -52,6 +54,7 @@ ACR registry endpoint returns the authentication URL and the Data endpoint URL i
 
 #### App Gateway Frontend IP Configuration
 A public IP is needed for the app gateway that will act as front end for the incoming requests. The custom domains i.e. acr-secure.contoso.com and acr-secure-data.contoso.com in the example will point to this public address of the app gateway. Create a new public IP address or use an existing public IP in the same location as the application gateway.
+
 ![Diagram showing app gateway frontend IP configuration.](images/agw-frontend-ip-configuration.png)
 
 #### App Gateway Backend pools
@@ -165,6 +168,7 @@ The rewrite rules to be configured for the “registry routing rule” are as fo
         e.	Enter the header value. In this, we will use `https://acr-secure.contoso.com{http_resp_Location_1}` as the header value. This will replace *contososecurepublicacr.azurecr.io* with *acr-secure.contoso.com* in the location header.
         
         f.	Select **OK**.
+
         ![Diagram showing app gateway rewrite Location Header action.](images/agw-rewrite-location-action.png)
 
 2. **Rewrite WWW-Authenticate Header**
@@ -233,7 +237,7 @@ The rewrite rules to be configured for the “registry routing rule” are as fo
         
         i.	Select **OK**
         
-        ![Diagram showing app gateway rewrite Data Location Header condition.](images/agw-rewrite-datalocation-action.png)
+        ![Diagram showing app gateway rewrite Data Location Header condition.](images/agw-rewrite-datalocation-condition.png)
 
     - Add an action to rewrite the location header:
     
@@ -245,13 +249,11 @@ The rewrite rules to be configured for the “registry routing rule” are as fo
         
         d.	In the Common header list, select Location.
         
-        e.	Enter the header value. In this, we will use 
-        https://acr-secure-data.contoso.com{http_resp_Location_1} 
-        as the header value. This will replace contososecurepublicacr.eastus.data.azurecr.io with acr-secure-data.contoso.com in the location header.
+        e.	Enter the header value. In this, we will use `https://acr-secure-data.contoso.com{http_resp_Location_1}` as the header value. This will replace contososecurepublicacr.eastus.data.azurecr.io with acr-secure-data.contoso.com in the location header.
         
         f.	Select **OK**.
         
-        ![Diagram showing app gateway rewrite Data Location Header condition.](images/agw-rewrite-datalocation-condition.png)
+        ![Diagram showing app gateway rewrite Data Location Header condition.](images/agw-rewrite-datalocation-action.png)
 
 ### Azure Web Application Firewall (WAF)
 #### Overview
@@ -274,16 +276,17 @@ Ensure post testing, WAF is set to Prevention mode to block access matching the 
 *This article is maintained by Microsoft. It was originally written by the following contributors.*
 
 Principal authors:
-- Kumar Ashwin Hubert | Consultant
-- Rajesh Singh | Solution Architect
+- [Kumar Ashwin Hubert](https://www.linkedin.com/in/kumar-ashwin-hubert) | Consultant
+- [Rajesh Singh](https://www.linkedin.com/in/rajeshsinghms) | Solution Architect
 
+*To see non-public LinkedIn profiles, sign in to LinkedIn.*
 
 ## Next Steps
 This reference architecture depicts the integration of Azure Container Registry (ACR) and Azure Application Gateway in conjunction with WAF policy to allow public access to the container images while keeping the ACR private and providing granularized access control using the ACR’s token and scope map feature. This architecture can be further extended to using geo-replication enabled ACR for multiple regions, by deploying an app gateway instance in each geo-replicated region and setting up a performance-based traffic manager with the multiple app gateway endpoints.
 
 ## Related resources
-- [Azure Container Registries Overview]()
-- [ACR Authenticate with token]()
-- [Azure Application Gateway Overview]()
-- [Rewrite HTTP request and response headers with Azure Application Gateway]()
-- [Azure Web Application Firewall (WAF) - Geomatch custom rules]()
+- [Azure Container Registries Overview](/azure/container-registry/container-registry-intro)
+- [ACR Authenticate with token](/azure/container-registry/container-registry-repository-scoped-permissions)
+- [Azure Application Gateway Overview](/azure/application-gateway/overview)
+- [Rewrite HTTP request and response headers with Azure Application Gateway](/azure/application-gateway/rewrite-http-headers-portal)
+- [Azure Web Application Firewall (WAF) - Geomatch custom rules](/azure/web-application-firewall/ag/geomatch-custom-rules)
