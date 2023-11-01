@@ -1531,8 +1531,8 @@ items:
       items:
       - name: Architectures
         items:
-          - name: Public facing ACR Reference Architecture
-            href: reference-architectures/containers/acr/public-facing-acr-reference-architecture.yml
+        - name: Public facing ACR Reference Architecture
+          href: reference-architectures/containers/acr/public-facing-acr-reference-architecture.yml
   - name: Databases
     items:
     - name: Get started
