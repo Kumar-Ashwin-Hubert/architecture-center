@@ -4,7 +4,7 @@ metadata:
   description: Reference architecture for the deployment of secured Azure Container Registry (ACR) for consuming images and artifacts by customer applications over public internet.
   author: kuhubert
   ms.author: kuhubert, rajeshsingh
-  ms.date: 10/15/2023
+  ms.date: 11/01/2023
   ms.topic: reference-architecture
   ms.service: architecture-center
   ms.subservice: reference-architecture
@@ -21,7 +21,7 @@ summary: Reference architecture for the deployment of secured Azure Container Re
 products:
   - azure-application-gateway
   - azure-container-registry
-  - azure-firewall
+  - azure-web-application-firewall
 thumbnailUrl: /azure/architecture/browse/thumbs/public-facing-acr-reference-architecture.png
 content: |
    [!include[](public-facing-acr-reference-architecture-content.md)]
