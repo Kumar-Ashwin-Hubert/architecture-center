@@ -2,8 +2,8 @@
 metadata:
   title: Public facing ACR Reference Architecture 
   description: Reference architecture for the deployment of secured Azure Container Registry (ACR) for consuming images and artifacts by customer applications over public internet.
-  author:
-  ms.author: architectures
+  author: kuhubert
+  ms.author: kuhubert, rajeshsingh
   ms.date: 10/15/2023
   ms.topic: reference-architecture
   ms.service: architecture-center
